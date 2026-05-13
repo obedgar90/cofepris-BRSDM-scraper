@@ -1,0 +1,19 @@
+---
+description: Python implementation rules for scraper, transform, and load modules
+globs: **/*.py
+alwaysApply: false
+---
+
+# Python Implementation Standards
+
+- Use type hints for public functions and class methods.
+- Keep modules cohesive and respect single responsibility.
+- Inject external dependencies (browser, DB engine, config) instead of hardcoding them.
+- Avoid hidden side effects at import time.
+- Raise specific exceptions with clear, user-actionable messages.
+
+# Reliability
+
+- Use retries/backoff only for transient failures.
+- Prefer deterministic transformations and explicit validation.
+- Keep selector definitions and field mapping centralized and testable.

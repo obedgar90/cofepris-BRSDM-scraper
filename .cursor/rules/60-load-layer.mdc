@@ -1,0 +1,18 @@
+---
+description: Standards for SQLAlchemy/PostgreSQL load layer
+globs: src/load/**/*.py
+alwaysApply: false
+---
+
+# Load Layer Rules
+
+- Isolate SQLAlchemy engine/session creation from business logic.
+- Use transactions explicitly and roll back cleanly on failures.
+- Make load mode explicit (`append`, `replace`, or upsert strategy) and document it.
+- Use chunked writes for large datasets when appropriate.
+- Emit clear load metrics (rows processed, inserted, failed).
+
+# Load Tests
+
+- Cover successful insert path and DB failure/rollback path.
+- Cover behavior for repeated loads according to selected idempotency strategy.

@@ -1,0 +1,18 @@
+---
+description: Use-case orchestration rules for end-to-end pipeline flows
+globs: src/pipeline/**/*.py
+alwaysApply: false
+---
+
+# Pipeline Orchestration Rules
+
+- Keep orchestration as application/use-case logic, not infrastructure-heavy code.
+- Compose scraper, transform, and load via dependency injection.
+- Define clear stage boundaries and explicit handoff contracts between stages.
+- Handle partial failures with explicit stage-level error reporting.
+- Prefer structured logs that identify stage, dataset, and failure reason.
+
+# Pipeline Tests
+
+- Test stage order and stage interaction contracts.
+- Test fail-fast behavior and error propagation across stages.

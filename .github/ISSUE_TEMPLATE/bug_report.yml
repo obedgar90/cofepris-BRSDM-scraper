@@ -1,0 +1,53 @@
+name: Reporte de error
+description: Reporta un problema reproducible en el proyecto
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por reportar este problema. Comparte suficiente contexto para que podamos reproducirlo.
+  - type: input
+    id: summary
+    attributes:
+      label: Resumen
+      description: Describe el error en una frase
+      placeholder: El scraper falla al descargar el archivo completo
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+      description: Enumera pasos claros y mínimos
+      placeholder: |
+        1. Ejecutar comando ...
+        2. Navegar a ...
+        3. Observar error ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Resultado actual
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs o evidencia
+      description: Pega trazas, mensajes de error o capturas relevantes
+      render: shell
+  - type: input
+    id: environment
+    attributes:
+      label: Entorno
+      description: SO, versión de Python, Docker (si aplica)
+      placeholder: macOS 15, Python 3.12, Docker 26

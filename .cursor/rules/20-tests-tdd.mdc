@@ -1,0 +1,19 @@
+---
+description: Test-first workflow and quality gates for pytest suites
+globs: tests/**/*.py
+alwaysApply: false
+---
+
+# TDD Rules
+
+- Write or update tests before writing production code.
+- Confirm tests fail for the expected reason before implementing fixes.
+- Implement the minimal change required to make tests pass.
+- Refactor only while tests remain green.
+
+# Test Quality
+
+- Keep test names, docstrings, and comments in English.
+- Cover happy path and at least one failure path for new behavior.
+- Use deterministic fixtures; avoid network calls in unit tests.
+- Prefer unit tests first, integration tests only when cross-boundary behavior matters.

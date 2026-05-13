@@ -1,0 +1,19 @@
+---
+description: Core project guardrails for COFEPRIS scraper work
+alwaysApply: true
+---
+
+# Project Governance
+
+- Keep changes small, focused, and reversible.
+- Preserve existing behavior unless the user explicitly requests a breaking change.
+- Follow SOLID principles for module and class design.
+- Never commit secrets, tokens, credentials, or private keys.
+- Ask before adding dependencies, changing DB schema, or performing destructive operations.
+- Prefer explicit errors and actionable logs over silent failures.
+
+# Safety Boundaries
+
+- Allowed: read files, edit code/tests/docs, run focused checks.
+- Ask first: infra/CI changes, repeated production scraping runs, data-destructive actions.
+- Never: disable tests to force success, run destructive git/data commands without approval.

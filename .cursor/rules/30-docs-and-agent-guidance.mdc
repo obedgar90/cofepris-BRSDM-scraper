@@ -1,0 +1,18 @@
+---
+description: Documentation language and agent-instruction consistency rules
+globs: **/*.md
+alwaysApply: false
+---
+
+# Documentation Rules
+
+- Write new documentation in English.
+- Keep operational instructions concise and immediately actionable.
+- Update docs when behavior, setup, or runbook steps change.
+- Prefer short sections and bullet lists over long prose.
+
+# Agent Instruction Consistency
+
+- Keep `AGENTS.md` aligned with project behavior and tooling.
+- When adding workflow steps, include clear safety boundaries and verification checkpoints.
+- Avoid duplicating large manuals; link or reference canonical files instead.

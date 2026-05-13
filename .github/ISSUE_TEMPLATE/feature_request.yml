@@ -1,0 +1,36 @@
+name: Solicitud de mejora
+description: Propón una mejora o nueva funcionalidad
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por proponer una mejora. Explica el problema y el valor para la comunidad.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema actual
+      description: ¿Qué limitación existe hoy?
+      placeholder: Actualmente no podemos ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Propuesta de solución
+      description: Describe la mejora sugerida
+      placeholder: Propongo agregar ...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: ¿Qué otras opciones evaluaste?
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impacto esperado
+      description: ¿Cómo beneficia a usuarias/os y mantenedoras/es?

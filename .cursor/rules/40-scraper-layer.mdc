@@ -1,0 +1,18 @@
+---
+description: Standards for COFEPRIS scraping layer implementation
+globs: src/scraper/**/*.py
+alwaysApply: false
+---
+
+# Scraper Layer Rules
+
+- Encapsulate browser/page logic behind small, testable interfaces.
+- Keep selectors in a dedicated module; avoid scattering locator strings.
+- Use explicit waits for stable page states/events, not arbitrary sleep calls.
+- Implement retry/backoff only for transient portal failures.
+- Detect UI/portal drift and raise actionable exceptions with context.
+
+# Scraper Testability
+
+- Mock browser interactions in unit tests.
+- Cover success path, timeout path, and selector-missing path.

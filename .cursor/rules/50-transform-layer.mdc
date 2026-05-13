@@ -1,0 +1,19 @@
+---
+description: Standards for data normalization and transformation layer
+globs: src/transform/**/*.py
+alwaysApply: false
+---
+
+# Transform Layer Rules
+
+- Keep transformation functions deterministic and side-effect free.
+- Normalize headers to snake_case ASCII consistently.
+- Maintain explicit source-to-target field mapping with versionable constants.
+- Validate required columns before processing and fail fast with clear errors.
+- Avoid embedding database or network concerns in transformation modules.
+
+# Transform Tests
+
+- Test normalization with accented and special-character headers.
+- Test missing-required-column behavior.
+- Test idempotency for repeated normalization runs.

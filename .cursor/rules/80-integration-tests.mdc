@@ -1,0 +1,18 @@
+---
+description: Integration test standards for DB and pipeline boundaries
+globs: tests/integration/**/*.py
+alwaysApply: false
+---
+
+# Integration Test Rules
+
+- Keep integration tests in English and scenario-focused.
+- Use controlled fixtures and deterministic seed data.
+- Prefer containerized dependencies for PostgreSQL-backed tests.
+- Avoid live portal calls in CI unless explicitly marked and isolated.
+- Verify end-to-end contracts: download artifact -> transform output -> persisted rows.
+
+# Execution Guidance
+
+- Run integration tests only when boundary behavior changes.
+- Keep unit tests as the default fast feedback mechanism.
