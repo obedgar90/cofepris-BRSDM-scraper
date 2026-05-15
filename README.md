@@ -134,6 +134,244 @@ Un ejemplo de encabezado con 3 registros es:
 
 De cualquier forma dentro de este proyecto hay un archivo de ejemplo descargado el 13 de Mayo de 2026 en [/info/Visor_Registros_Medicamentos.xlsx](/info/Visor_Registros_Medicamentos.xlsx)
 
+## Instalación y ejecución (paso a paso)
+
+Esta guía está pensada para personas con conocimientos básicos de terminal.
+Sigue los pasos en orden y copia/pega los comandos tal como están.
+
+### 1) Requisitos previos
+
+Necesitas tener instalado:
+
+- `git`
+- `python3` (recomendado 3.12 o superior)
+- `docker` y `docker compose` (si usarás la opción con contenedores)
+
+Comandos para validar que ya los tienes:
+
+```bash
+git --version
+python3 --version
+docker --version
+docker compose version
+```
+
+### 2) Clonar el repositorio y entrar al proyecto
+
+```bash
+git clone git@github.com:Quantium/cofepris-BRSDM-scraper.git
+cd cofepris-BRSDM-scraper
+```
+
+### 3) Crear archivo de configuración local
+
+El proyecto usa variables de entorno. Crea tu archivo local `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Después abre `.env` y revisa, al menos, `DATABASE_URL`.
+
+Audit attempts are stored in PostgreSQL using `ATTEMPTS_TABLE_NAME` (default: `scraping_attempts`).
+
+### 3.1) Anti-bot scraping settings (optional)
+
+The downloader now supports configurable anti-detection hardening for Playwright.
+You can keep defaults, or tune these values in `.env`:
+
+- `SCRAPER_STEALTH_ENABLED`: enables browser hardening and JS fingerprint evasions.
+- `SCRAPER_HEADLESS`: run browser headless (`true`) or visible (`false`).
+- `SCRAPER_USER_AGENT`: browser user agent used in context.
+- `SCRAPER_VIEWPORT_WIDTH` and `SCRAPER_VIEWPORT_HEIGHT`: browser viewport profile.
+- `SCRAPER_LOCALE` and `SCRAPER_TIMEZONE_ID`: locale/timezone browser signals.
+- `SCRAPER_PROXY_SERVERS`: comma-separated proxy endpoints for per-attempt rotation.
+- `SCRAPER_PROXY_USERNAME` and `SCRAPER_PROXY_PASSWORD`: optional proxy auth.
+
+Example:
+
+```bash
+SCRAPER_PROXY_SERVERS=http://proxy-1:8080,http://proxy-2:8080
+SCRAPER_PROXY_USERNAME=my-user
+SCRAPER_PROXY_PASSWORD=my-pass
+```
+
+### 3.2) Proxy Strategy V2 (health + circuit breaker + sticky domain)
+
+Proxy Strategy V2 is optional and disabled by default.
+Enable it when you need stronger resilience against IP-level blocks.
+
+- `SCRAPER_PROXY_V2_ENABLED`: enables persisted V2 strategy.
+- `SCRAPER_PROXY_CIRCUIT_FAILURE_THRESHOLD`: failures before opening a circuit.
+- `SCRAPER_PROXY_CIRCUIT_COOLDOWN_SECONDS`: cooldown window for open circuits.
+- `SCRAPER_PROXY_HALF_OPEN_MAX_TRIALS`: max probe attempts in half-open state.
+- `SCRAPER_PROXY_STICKY_TTL_SECONDS`: sticky proxy reuse window per domain.
+- `SCRAPER_PROXY_HEALTH_DECAY_ON_SUCCESS`: health recovery on successful attempts.
+- `SCRAPER_PROXY_HEALTH_PENALTY_TIMEOUT`: penalty applied on timeout/transient errors.
+- `SCRAPER_PROXY_HEALTH_PENALTY_BLOCK`: penalty applied on explicit bot-block signals.
+- `SCRAPER_PROXY_STRATEGY_FAILOPEN`: fallback to baseline proxy selection if strategy store fails.
+
+Recommended starting values:
+
+```bash
+SCRAPER_PROXY_V2_ENABLED=true
+SCRAPER_PROXY_CIRCUIT_FAILURE_THRESHOLD=3
+SCRAPER_PROXY_CIRCUIT_COOLDOWN_SECONDS=600
+SCRAPER_PROXY_STICKY_TTL_SECONDS=900
+SCRAPER_PROXY_STRATEGY_FAILOPEN=true
+```
+
+---
+
+## Opción A (recomendada para principiantes): correr con Docker
+
+Esta opción evita instalar dependencias de Python manualmente.
+
+### A.1 Levantar servicios
+
+```bash
+docker compose up --build
+```
+
+Qué hace este comando:
+
+- Construye la imagen del proyecto.
+- Levanta PostgreSQL.
+- Starts Adminer for web-based database inspection.
+- Ejecuta el pipeline una vez.
+
+### A.2 Verificar que terminó correctamente
+
+En la salida de terminal debe aparecer un JSON con `"status": "ok"`.
+
+Para detener los servicios:
+
+```bash
+docker compose down
+```
+
+Adminer web UI (local):
+
+- URL: `http://localhost:8080`
+- System: `PostgreSQL`
+- server: `postgres`
+- Username: `postgres`
+- Password: `postgres`
+- Database: `cofepris`
+
+### A.3 Modo desarrollo con volumen (sin rebuild por cada cambio)
+
+Este modo monta tu código local dentro del contenedor para que los cambios en
+`src/` se reflejen inmediatamente.
+
+Puedes usar comandos cortos con `make`:
+
+```bash
+make dev-up
+make dev-run
+make dev-down
+```
+
+Equivalencias:
+
+- `make dev-up`: levanta PostgreSQL + Adminer + contenedor de desarrollo con volúmenes.
+- `make dev-run`: ejecuta `cofepris run` dentro del contenedor de desarrollo.
+- `make dev-down`: baja los servicios de desarrollo.
+
+Si prefieres ejecutarlo sin `make`, usa estos comandos directos:
+
+1. Levanta PostgreSQL, Adminer y el contenedor de desarrollo:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d postgres adminer app-dev
+```
+
+1. Ejecuta el pipeline desde el contenedor de desarrollo:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml exec app-dev cofepris run
+```
+
+1. Haz cambios en tu código local (por ejemplo en `src/`) y vuelve a ejecutar
+el mismo comando del paso 2. No necesitas reconstruir la imagen.
+
+1. Cuando termines:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+```
+
+---
+
+## Opción B: correr en tu máquina (sin Docker)
+
+### B.1 Crear ambiente virtual
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Nota: si cierras la terminal, vuelve a activar el ambiente con:
+
+```bash
+source .venv/bin/activate
+```
+
+### B.2 Instalar dependencias
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev]"
+```
+
+### B.3 Ejecutar el pipeline una vez
+
+```bash
+cofepris run
+```
+
+Si todo está bien, verás salida JSON con `"status": "ok"`.
+
+### B.4 Ejecutar en modo periódico (daemon)
+
+Ejemplo: correr todos los días a las 6:00 AM.
+
+```bash
+cofepris daemon --cron "0 6 * * *"
+```
+
+Detener el daemon: `Ctrl + C`.
+
+---
+
+## Comandos de validación de calidad (opcional)
+
+```bash
+ruff check .
+mypy src
+pytest -q
+python scripts/check_story_docs.py
+```
+
+---
+
+## Problemas comunes
+
+- Error de conexión a base de datos:
+  - Revisa `DATABASE_URL` en `.env`.
+  - Si usas Docker, confirma que `postgres` esté levantado.
+- Adminer is not reachable at `http://localhost:8080`:
+  - Verify the `adminer` service is running.
+  - Check whether port `8080` is already in use by another app.
+- Adminer cannot connect to PostgreSQL:
+  - Confirm Adminer uses `server: postgres` (not `localhost`).
+  - Wait until `postgres` is healthy before logging in.
+- Error `command not found: cofepris`:
+  - Activa tu ambiente virtual (`source .venv/bin/activate`) o usa Docker.
+- Error al instalar dependencias en macOS por entorno administrado:
+  - Usa ambiente virtual (`python3 -m venv .venv`) en lugar de instalar globalmente.
+
 ## Comunidad y contribuciones
 
 Si deseas aportar al proyecto, revisa primero estos archivos:
